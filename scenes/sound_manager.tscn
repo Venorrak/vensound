@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bs542dn2tlh4g"]
+
+[ext_resource type="Script" uid="uid://c81h3tkwx2pe" path="res://scripts/soundManager.gd" id="1_gbdfy"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_g5net"]
+
+[node name="SoundManager" type="Node2D" node_paths=PackedStringArray("musicTime")]
+script = ExtResource("1_gbdfy")
+musicTime = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 4096.0
+one_shot = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_g5net")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

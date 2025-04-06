@@ -1,0 +1,93 @@
+[gd_scene load_steps=4 format=3 uid="uid://d27rlg034wsr8"]
+
+[ext_resource type="Theme" uid="uid://d0iwwrx8iukwx" path="res://interface_theme.tres" id="1_ocy8l"]
+[ext_resource type="Script" uid="uid://yjivphd58lq2" path="res://scripts/global.gd" id="2_dcoxp"]
+[ext_resource type="Script" uid="uid://sonfb5yau4mh" path="res://scripts/mouse.gd" id="3_2oy2a"]
+
+[node name="Control" type="Control" node_paths=PackedStringArray("tempoSpinBox", "grid", "lineNameContainer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_ocy8l")
+script = ExtResource("2_dcoxp")
+minimumCellSize = Vector2(7.5, 15)
+tempoSpinBox = NodePath("VBoxContainer/settings/SpinBox")
+grid = NodePath("VBoxContainer/PanelContainer/scroll/HBoxContainer/Grid")
+lineNameContainer = NodePath("VBoxContainer/PanelContainer/scroll/HBoxContainer/VBoxContainer")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+
+[node name="settings" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="clearButton" type="Button" parent="VBoxContainer/settings"]
+layout_mode = 2
+text = "Clear"
+
+[node name="saveButton" type="Button" parent="VBoxContainer/settings"]
+layout_mode = 2
+text = "Save"
+
+[node name="playButton" type="Button" parent="VBoxContainer/settings"]
+layout_mode = 2
+text = "Play"
+
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/settings"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 300.0
+value = 1.0
+suffix = "bpm"
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="scroll" type="ScrollContainer" parent="VBoxContainer/PanelContainer"]
+custom_minimum_size = Vector2(1152, 450)
+layout_mode = 2
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer/scroll"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/PanelContainer/scroll/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Grid" type="GridContainer" parent="VBoxContainer/PanelContainer/scroll/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 2
+columns = 4
+
+[node name="mouse" type="Node2D" parent="." node_paths=PackedStringArray("lengthLabel", "labelTimer")]
+script = ExtResource("3_2oy2a")
+lengthLabel = NodePath("length")
+labelTimer = NodePath("labelTimer")
+
+[node name="labelTimer" type="Timer" parent="mouse"]
+wait_time = 2.0
+one_shot = true
+
+[node name="length" type="Label" parent="mouse"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -23.0
+offset_right = 69.0
+grow_vertical = 0
+text = "1"
+
+[connection signal="button_up" from="VBoxContainer/settings/clearButton" to="." method="_on_clear_button_button_up"]
+[connection signal="button_up" from="VBoxContainer/settings/saveButton" to="." method="_on_save_button_button_up"]
+[connection signal="button_up" from="VBoxContainer/settings/playButton" to="." method="_on_play_button_button_up"]
+[connection signal="value_changed" from="VBoxContainer/settings/SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="timeout" from="mouse/labelTimer" to="mouse" method="_on_label_timer_timeout"]
