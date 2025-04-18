@@ -11,7 +11,9 @@ config_version=5
 [application]
 
 config/name="vensound"
+run/main_scene="uid://d27rlg034wsr8"
 config/features=PackedStringArray("4.4", "Forward Plus")
+run/max_fps=60
 config/icon="res://icon.svg"
 
 [autoload]
@@ -19,3 +21,20 @@ config/icon="res://icon.svg"
 MusicRef="*res://scripts/musicRef.gd"
 GlobalVars="*res://scripts/globalVars.gd"
 SoundManager="*res://scenes/sound_manager.tscn"
+
+[debug]
+
+file_logging/enable_file_logging=true
+
+[editor]
+
+run/main_run_args="--verbose"
+
+[memory]
+
+limits/message_queue/max_size_mb=100
+
+[physics]
+
+2d/run_on_separate_thread=true
+3d/run_on_separate_thread=true

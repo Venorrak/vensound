@@ -5,11 +5,14 @@ extends Control
 
 @export var grid : GridContainer
 @export var lineNameContainer : VBoxContainer
+@export var synthRoot : HBoxContainer
 
 @onready var noteScript = load("res://scripts/note.gd")
+@export var synthScene : PackedScene
 
 var notes : Array[Array] = []
 var jsonDataMirror : Dictionary = {}
+var selectedTrack : int = 0
 
 func _ready() -> void:
 	var json = JSON.new()
@@ -21,12 +24,13 @@ func _ready() -> void:
 		tempoSpinBox.value = data_received["settings"]["tempo"]
 		generate()
 		fill()
+		createSynths()
 		print("ready")
 	else:
 		print("parse error")
 
 func generate() -> void:
-	var musicLength : int = jsonDataMirror["settings"]["musciLength"]
+	var musicLength : int = jsonDataMirror["settings"]["musicLength"]
 	grid.columns = musicLength / 8
 	for octave in 8:
 		for note in MusicRef.refSheet.keys().size():
@@ -54,7 +58,7 @@ func generate() -> void:
 			notes.append(newNotesArray)
 
 func fill() -> void:
-	for newNote in jsonDataMirror["music"][0]["chart"]:
+	for newNote in jsonDataMirror["music"][selectedTrack]["chart"]:
 		var newNoteLine : int = MusicRef.getLine(newNote["freq"])
 		for i in newNote["length"]:
 			if newNote["start_at"] + newNote["length"] - 1 == i + newNote["start_at"]:
@@ -62,6 +66,18 @@ func fill() -> void:
 			else:
 				notes[newNoteLine][i + newNote["start_at"]].handle_enabled()
 			notes[newNoteLine][i + newNote["start_at"]].currentNote = newNote
+
+func createSynths() -> void:
+	for i in jsonDataMirror["music"].size():
+		var newSynth = synthScene.instantiate()
+		newSynth.id = i
+		newSynth.selectSynth.connect(setSelectedTrack)
+		synthRoot.add_child(newSynth)
+
+func setSelectedTrack(id : int) -> void:
+	clearGrid()
+	selectedTrack = id
+	fill()
 
 func handleNewNote(line: int, start_at: int, length: int, freq: float) -> void:
 	var newData : Dictionary = {
@@ -71,24 +87,24 @@ func handleNewNote(line: int, start_at: int, length: int, freq: float) -> void:
 		"id": randId(10)
 	}
 	SoundManager.playNote(freq, length, jsonDataMirror["settings"]["tempo"])
-	jsonDataMirror["music"][0]["chart"].append(newData)
+	jsonDataMirror["music"][selectedTrack]["chart"].append(newData)
 	for i in length:
 		if i == length - 1:
 			notes[line][start_at + i].handle_enabled(true)
 		else: 
 			notes[line][start_at + i].handle_enabled()
 		notes[line][start_at + i].currentNote = newData
-	print(jsonDataMirror["music"][0]["chart"])
+	print(jsonDataMirror["music"][selectedTrack]["chart"])
 
 func handleDeleteNote(id: String) -> void:
-	for oldnote in jsonDataMirror["music"][0]["chart"]:
+	for oldnote in jsonDataMirror["music"][selectedTrack]["chart"]:
 		if oldnote["id"] == id:
-			jsonDataMirror["music"][0]["chart"].erase(oldnote)
+			jsonDataMirror["music"][selectedTrack]["chart"].erase(oldnote)
 			var line : int = MusicRef.getLine(oldnote["freq"])
 			for i in oldnote["length"]:
 				notes[line][oldnote["start_at"] + i].handle_enabled()
 				notes[line][oldnote["start_at"] + i].currentNote = {}
-	print(jsonDataMirror["music"][0]["chart"])
+	print(jsonDataMirror["music"][selectedTrack]["chart"])
 	
 func randId(length: int) -> String:
 	var id : String = ""
@@ -97,13 +113,16 @@ func randId(length: int) -> String:
 		id += characters[randi_range(0, 35)]
 	return id
 
-func _on_clear_button_button_up() -> void:
-	for noteToClear in jsonDataMirror["music"][0]["chart"]:
+func clearGrid() -> void:
+	for noteToClear in jsonDataMirror["music"][selectedTrack]["chart"]:
 		var line : int = MusicRef.getLine(noteToClear["freq"])
 		for i in noteToClear["length"]:
 			notes[line][noteToClear["start_at"] + i].handle_enabled()
 			notes[line][noteToClear["start_at"] + i].currentNote = {}
-	jsonDataMirror["music"][0]["chart"] = []
+
+func _on_clear_button_button_up() -> void:
+	clearGrid()
+	jsonDataMirror["music"][selectedTrack]["chart"] = []
 
 func _on_save_button_button_up() -> void:
 	var json = JSON.new()

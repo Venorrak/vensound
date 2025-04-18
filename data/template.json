@@ -1,0 +1,38 @@
+{
+	"music": [
+		{
+			"chart": [
+				{
+					"freq": 130.81,
+					"id": "4otsbnadtt",
+					"length": 8.0,
+					"start_at": 8.0
+				}
+			],
+			"synth": {
+				"wave": "sine",
+				"pitch": 1.55,
+				"filter": {
+					"type": "low",
+					"cutoffFreq": 1
+				},
+				"adsr": {
+					"atk": 1,
+					"dec": 1,
+					"sus": 1,
+					"rel": 1
+				},
+				"lfo": {
+					"freq": 1,
+					"amp": 1,
+					"wave": "sine",
+					"link": "pitch"
+				}
+			}
+		}
+	],
+	"settings": {
+		"musicLength": 152.0,
+		"tempo": 150.0
+	}
+}

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://b80bk251dlejo"]
+
+[ext_resource type="Script" uid="uid://8bvedaybcs2b" path="res://scripts/track_player.gd" id="1_iyuep"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_iyuep"]
+mix_rate = 22050.0
+
+[node name="track_player" type="Node2D" node_paths=PackedStringArray("musicTime", "testAudioStream")]
+script = ExtResource("1_iyuep")
+musicTime = NodePath("Timer")
+testAudioStream = NodePath("AudioStreamPlayer")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 4096.0
+one_shot = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_iyuep")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
